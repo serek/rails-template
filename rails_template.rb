@@ -80,7 +80,7 @@ run "haml --rails ."
 run "echo -e 'y\nn\n' | compass --rails ."
 run "mkdir -p public/stylesheets/960"
 %w(text reset 960).each do |file|
-  from_repo "#{file}.css", "public/stylesheets/960/#{file.css}"
+  from_repo "#{file}.css", "public/stylesheets/960/#{file}.css"
 end
 file "app/stylesheets/screen.sass", "@import compass/utilities.sass\n@import util.sass\n"
 from_repo "util.sass", "app/stylesheets/_util.sass"
@@ -142,7 +142,7 @@ if yes?("Would you like authentication?")
   %w(_form edit new).each do |name|
     from_repo "auth/users.#{name}.html.haml", "app/views/users/#{name}.html.haml"
   end
-  from_repo "login.html.haml", "app/views/user_sessions/new.html.haml"
+  from_repo "auth/login.html.haml", "app/views/user_sessions/new.html.haml"
   # Routes
   route "map.resources :users"
   route "map.resource  :user_session"

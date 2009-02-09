@@ -6,4 +6,4 @@
 
 = f.password_field :password_confirmation, :required => @user.new_record?, :class => "title"
 
-%p.button-field= f.submit_button "#{@user.new_record? ? "Create" : "Update"} your account"
+%p.button-field= f.submit "#{@user.new_record? ? "Create" : "Update"} your account"

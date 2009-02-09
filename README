@@ -5,3 +5,20 @@ a really nice hack is to then do this:
 alias rails="ruby ~/src/git/rails/railties/bin/rails $1 -m http://github.com/imajes/rails-template/raw/master/rails_template.rb"
 
 this works for me, for zsh.. similar i am sure will work for you
+
+==================================================
+
+This fork is even more opinionated.
+It assumes:
+
+ - haml, sass, compass, 960gs - default templates for login, layout etc.
+ - uses a predefined form builder (air budd)
+ - test with shoulda and rr.
+ - use authlogic, searchlogic and aasm
+ - give option for a default "site controller"
+ - Use forgery instead of faker
+ - default to my plugin with a bunch of helpers (e.g. Setting
+   and the like).
+ - Automatically add spawn and workling so I don't have to google.
+ 
+All in all, It's bitching (atleast for me).

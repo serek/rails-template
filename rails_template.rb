@@ -1,19 +1,21 @@
 # Darcy's Rails Template, based off Peter Cooper's Template
 # and James Cox's fork. Using some code from:
 # * http://github.com/lackac/app_lego/tree
-# *
+
+require 'open-uri'
 
 GITHUB_USER = "Sutto"
 
 def download(from, to = from.split("/").last)
-  run "curl -s -L #{from} > #{to}"
+  #run "curl -s -L #{from} > #{to}"
+  file to, open(from).read
 end
 
 def from_repo(from, to = from.split("/").last)
   download("http://github.com/#{GITHUB_USER}/rails-template/raw/master/#{from}", to)
 end
 
-def working_tree(comment)
+def commit_state(comment)
   git :add => "."
   git :commit => "-am '#{comment}'"
 end
@@ -39,19 +41,18 @@ run %{find . -type d -empty | grep -v "vendor" | grep -v ".git" | grep -v "tmp" 
 from_repo "raw_gitignore", ".gitignore"
 
 git :init
-working_tree "Added base / rough application"
+commit_state "Added base / rough application"
 
 ######################
 # View Related Stuff #
 ######################
 
 # Download JQuery
-inside "public/javascripts/" do
-  download "http://jqueryjs.googlecode.com/files/jquery-1.3.1.min.js", "jquery/jquery.min.js"
-  download "http://jqueryjs.googlecode.com/svn/trunk/plugins/form/jquery.form.js", "jquery/jquery.form.js"
-end
+run "mkdir -p public/javascripts/jquery"
+download "http://jqueryjs.googlecode.com/files/jquery-1.3.1.min.js", "public/javascripts/jquery/jquery.min.js"
+download "http://jqueryjs.googlecode.com/svn/trunk/plugins/form/jquery.form.js", "public/javascripts/jquery/jquery.form.js"
 
-working_tree "jQuery Base"
+commit_state "jQuery Base"
 
 ##################################
 # Adding the initial set of gems #
@@ -61,32 +62,36 @@ working_tree "jQuery Base"
 gem 'mislav-will_paginate',  :version => '>= 2.2.3', :lib => 'will_paginate',  :source => 'http://gems.github.com'
 gem 'haml',                  :version => '>= 2.1'
 gem 'chriseppstein-compass', :lib => 'compass', :version => '>= 0.3.4'
-gem 'chriseppstein-compass-960-plugin', :lib => 'ninesixty'
 # Testing stuff
-gem "thoughtbot-shoulda",    :lib => "shoulda", :version => ">= 2.0.5"
-gem "redgreen"
+gem "thoughtbot-shoulda",    :lib => "shoulda"
 gem "quietbacktrace"
 gem "rr"
 # General
 gem "searchlogic"
 gem 'rubyist-aasm',          :lib => "aasm"
 
-working_tree "Added gems to the app"
+commit_state "Added gems to the app"
 
 ###########################
 # Initialize HAML / Rails #
 ###########################
 
 run "haml --rails ."
-run "echo -e 'y\nn\n' | compass --rails -r ninesixty -f 960"
+run "echo -e 'y\nn\n' | compass --rails ."
+run "mkdir -p public/stylesheets/960"
+%w(text reset 960).each do |file|
+  from_repo "#{file}.css", "public/stylesheets/960/#{file.css}"
+end
+file "app/stylesheets/screen.sass", "@import compass/utilities.sass\n@import util.sass\n"
+from_repo "util.sass", "app/stylesheets/_util.sass"
 
-working_tree "Initialize Haml and Compass"
+commit_state "Initialize Haml and Compass"
 
 ######################################
 # Install all of the default plugins #
 ######################################
 
-plugin "paperclip",  :git => "git://github.com/thoughtbot/paperclip.git"
+#plugin "paperclip",  :git => "git://github.com/thoughtbot/paperclip.git"
 plugin "machinist",  :git => "git://github.com/notahat/machinist.git"
 plugin "forgery",    :git => "git://github.com/sevenwire/forgery.git"
 plugin "workling",   :git => "git://github.com/purzelrakete/workling.git"
@@ -94,7 +99,7 @@ plugin "spawn",      :git => "git://github.com/tra/spawn.git"
 plugin "nh-toolkit", :git => "git://github.com/Sutto/ninjahideout-toolkit.git"
 plugin "air_budd_form_builder", :git => "git://github.com/airblade/air_budd_form_builder.git"
 
-working_tree "Added plugins"
+commit_state "Added plugins"
 
 ##################################
 # Initialize the Settings Plugin #
@@ -105,7 +110,7 @@ default:
   site_name: Some Site
 END
 
-working_tree "Set up default site settings"
+commit_state "Set up default site settings"
 
 ###############################
 # Setup the default templates #
@@ -113,13 +118,14 @@ working_tree "Set up default site settings"
 
 run "mkdir -p app/views/shared"
 
-inside "app/views" do
-  download "application.html.haml", "layouts/application.html.haml"
-  download "header.html.haml",      "shared/_header.html.haml"
-  download "footer.html.haml",      "shared/_footer.html.haml"
-end
-
-working_tree "added default layout"
+from_repo "application.html.haml", "app/views/layouts/application.html.haml"
+from_repo "header.html.haml",      "app/views/shared/_header.html.haml"
+from_repo "footer.html.haml",      "app/views/shared/_footer.html.haml"
+from_repo "app_controller.rb",     "app/controllers/application_controller.rb"
+run "mkdir -p test/blueprints"
+from_repo "test_helper.rb",        "test/test_helper.rb"
+from_repo "user_blueprint.rb",     "test/blueprints/user_blueprint.rb"
+commit_state "added default layout"
 
 ########################################
 # Generates a user, controller + views #
@@ -130,17 +136,13 @@ if yes?("Would you like authentication?")
   generate :controller, "Users"
   generate :controller, "UserSessions"
   # Controllers
-  inside "app/controllers" do
-    from_repo "auth/users_controller.rb"
-    from_repo "auth/user_sessions_controller.rb"
-  end
+  from_repo "auth/users_controller.rb",         "app/controllers/users_controller.rb"
+  from_repo "auth/user_sessions_controller.rb", "app/controllers/user_sessions_controller.rb"
   # Views
-  inside "app/views" do
-    %w(_form edit new).each do |name|
-      from_repo "auth/users.#{name}.html.haml", "users/#{name}.html.haml"
-    end
-    from_repo "login.html.haml", "user_sessions/new.html.haml"
+  %w(_form edit new).each do |name|
+    from_repo "auth/users.#{name}.html.haml", "app/views/users/#{name}.html.haml"
   end
+  from_repo "login.html.haml", "app/views/user_sessions/new.html.haml"
   # Routes
   route "map.resources :users"
   route "map.resource  :user_session"
@@ -154,11 +156,9 @@ if yes?("Would you like authentication?")
     "display_name:string", "created_at:datetime", "updated_at:datetime", "type:string", "slug:string"
   ]
   generate :model,   "User", fields.join(" ")
-  inside "app/models" do
-    from_repo "auth/user.rb"
-    from_repo "auth/user_session.rb"
-  end
-  working_tree "Added basic authorization stuff"
+  from_repo "auth/user.rb",         "app/models/user.rb"
+  from_repo "auth/user_session.rb", "app/models/user_session.rb"
+  commit_state "Added basic authorization stuff"
 end
 
 ##################################################
@@ -166,13 +166,13 @@ end
 ##################################################
 
 if yes?("Would you like to generate a default index?")
-  controller = "class SiteController < ApplicationController\n\n  def index\n  page_is 'Welcome'\n  end\n\nend\n"
+  controller = "class SiteController < ApplicationController\n\n  def index\n    page_is 'Welcome'\n  end\n\nend\n"
   # Actually do the work
   generate :controller, "Site"
   route    "map.root :controller => 'site'"
   file     "app/views/site/index.html.haml", "%h2== Welcome to \#{Settings.site_name}\n"
-  file     "app/controllers/site_controller.rb", controllers
-  working_tree "Added a default site controller"
+  file     "app/controllers/site_controller.rb", controller
+  commit_state "Added a default site controller"
 end
 
 ################################
@@ -181,6 +181,7 @@ end
 
 rake "db:migrate"
 
-# if (host = ask?("Enter Passenger Host Name (empty for none)"))
-#   
-# end
+host = ask("Enter Passenger Host Name (empty for none)")
+unless host.blank?
+  run "sudo board-train . #{host}"
+end

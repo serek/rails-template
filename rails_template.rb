@@ -47,8 +47,8 @@ working_tree "Added base / rough application"
 
 # Download JQuery
 inside "public/javascripts/" do
-  download "http://jqueryjs.googlecode.com/files/jquery-1.3.1.min.js", "jquery.js"
-  download "http://jqueryjs.googlecode.com/svn/trunk/plugins/form/jquery.form.js"
+  download "http://jqueryjs.googlecode.com/files/jquery-1.3.1.min.js", "jquery/jquery.min.js"
+  download "http://jqueryjs.googlecode.com/svn/trunk/plugins/form/jquery.form.js", "jquery/jquery.form.js"
 end
 
 working_tree "jQuery Base"
@@ -61,15 +61,14 @@ working_tree "jQuery Base"
 gem 'mislav-will_paginate',  :version => '>= 2.2.3', :lib => 'will_paginate',  :source => 'http://gems.github.com'
 gem 'haml',                  :version => '>= 2.1'
 gem 'chriseppstein-compass', :lib => 'compass', :version => '>= 0.3.4'
+gem 'chriseppstein-compass-960-plugin', :lib => 'ninesixty'
 # Testing stuff
 gem "thoughtbot-shoulda",    :lib => "shoulda", :version => ">= 2.0.5"
 gem "redgreen"
 gem "quietbacktrace"
 gem "rr"
-# *logic gems
-gem "authlogic"
-gem "searchlogic"
 # General
+gem "searchlogic"
 gem 'rubyist-aasm',          :lib => "aasm"
 
 working_tree "Added gems to the app"
@@ -79,9 +78,9 @@ working_tree "Added gems to the app"
 ###########################
 
 run "haml --rails ."
-run "echo -e 'y\nn\n' | compass --rails -f blueprint"
+run "echo -e 'y\nn\n' | compass --rails -r ninesixty -f 960"
 
-working_tree "Initialize Rails"
+working_tree "Initialize Haml and Compass"
 
 ######################################
 # Install all of the default plugins #
@@ -103,8 +102,85 @@ working_tree "Added plugins"
 
 file "config/site.yml",<<-END
 default:
-  name: Some Site
+  site_name: Some Site
 END
 
-working_tree "added blank config"
+working_tree "Set up default site settings"
 
+###############################
+# Setup the default templates #
+###############################
+
+run "mkdir -p app/views/shared"
+
+inside "app/views" do
+  download "application.html.haml", "layouts/application.html.haml"
+  download "header.html.haml",      "shared/_header.html.haml"
+  download "footer.html.haml",      "shared/_footer.html.haml"
+end
+
+working_tree "added default layout"
+
+########################################
+# Generates a user, controller + views #
+########################################
+
+if yes?("Would you like authentication?")
+  gem "authlogic"
+  generate :controller, "Users"
+  generate :controller, "UserSessions"
+  # Controllers
+  inside "app/controllers" do
+    from_repo "auth/users_controller.rb"
+    from_repo "auth/user_sessions_controller.rb"
+  end
+  # Views
+  inside "app/views" do
+    %w(_form edit new).each do |name|
+      from_repo "auth/users.#{name}.html.haml", "users/#{name}.html.haml"
+    end
+    from_repo "login.html.haml", "user_sessions/new.html.haml"
+  end
+  # Routes
+  route "map.resources :users"
+  route "map.resource  :user_session"
+  # Models
+  generate :session, "UserSession"
+  fields = [
+    "login:string", "crypted_password:string", "password_salt:string",
+    "persistence_token:string", "single_access_token:string", "perishable_token:string",
+    "login_count:integer", "last_request_at:datetime", "current_login_at:datetime",
+    "last_login_at:datetime", "current_login_ip:string", "last_login_ip:string",
+    "display_name:string", "created_at:datetime", "updated_at:datetime", "type:string", "slug:string"
+  ]
+  generate :model,   "User", fields.join(" ")
+  inside "app/models" do
+    from_repo "auth/user.rb"
+    from_repo "auth/user_session.rb"
+  end
+  working_tree "Added basic authorization stuff"
+end
+
+##################################################
+# If the user says to, add a default index site. #
+##################################################
+
+if yes?("Would you like to generate a default index?")
+  controller = "class SiteController < ApplicationController\n\n  def index\n  page_is 'Welcome'\n  end\n\nend\n"
+  # Actually do the work
+  generate :controller, "Site"
+  route    "map.root :controller => 'site'"
+  file     "app/views/site/index.html.haml", "%h2== Welcome to \#{Settings.site_name}\n"
+  file     "app/controllers/site_controller.rb", controllers
+  working_tree "Added a default site controller"
+end
+
+################################
+# Finally, Run rake db migrate #
+################################
+
+rake "db:migrate"
+
+# if (host = ask?("Enter Passenger Host Name (empty for none)"))
+#   
+# end

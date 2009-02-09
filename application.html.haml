@@ -1,0 +1,17 @@
+!!! XML
+!!!
+%html{html_attrs}
+
+  %head
+    %title= "#{page_title} - #{Settings.site_name}"
+    %meta{'http-equiv' => "content-type", :content => "text/html;charset=UTF-8"}
+    = javascript_include_tag "jquery/jquery.min.js", "jquery/jquery.form.js"
+    = yield :extra_head
+  %body
+    #header= render :partial => 'shared/header'
+    
+    #contents
+      #inner-contents= yield
+      .clear
+    
+    #footer= render :partial => 'shared/footer'

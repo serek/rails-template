@@ -9,6 +9,9 @@ GITHUB_USER = "Sutto"
 def download(from, to = from.split("/").last)
   #run "curl -s -L #{from} > #{to}"
   file to, open(from).read
+rescue
+  puts "Frak me - No internets"
+  exit!
 end
 
 def from_repo(from, to = from.split("/").last)
@@ -60,15 +63,14 @@ commit_state "jQuery Base"
 
 # Layout / View related stuff
 gem 'mislav-will_paginate',  :version => '>= 2.2.3', :lib => 'will_paginate',  :source => 'http://gems.github.com'
-gem 'haml',                  :version => '>= 2.1'
-gem 'chriseppstein-compass', :lib => 'compass', :version => '>= 0.3.4'
+gem 'haml-edge',             :version => '>= 2.1.3', :lib => 'haml'
+gem 'chriseppstein-compass', :lib => 'compass', :version => '>= 0.6.6'
 # Testing stuff
 gem "thoughtbot-shoulda",    :lib => "shoulda"
 gem "quietbacktrace"
 gem "rr"
 # General
 gem "searchlogic"
-gem 'rubyist-aasm',          :lib => "aasm"
 
 commit_state "Added gems to the app"
 
@@ -91,11 +93,14 @@ commit_state "Initialize Haml and Compass"
 # Install all of the default plugins #
 ######################################
 
-#plugin "paperclip",  :git => "git://github.com/thoughtbot/paperclip.git"
-plugin "machinist",  :git => "git://github.com/notahat/machinist.git"
-plugin "forgery",    :git => "git://github.com/sevenwire/forgery.git"
-plugin "workling",   :git => "git://github.com/purzelrakete/workling.git"
-plugin "spawn",      :git => "git://github.com/tra/spawn.git"
+#plugin "paperclip", :git => "git://github.com/thoughtbot/paperclip.git" # Can has br0kedness.
+plugin "machinist",     :git => "git://github.com/notahat/machinist.git"
+plugin "forgery",       :git => "git://github.com/sevenwire/forgery.git"
+plugin "state_machine", :git => "git://github.com/pluginaweek/state_machine.git"
+if yes?("do you anticipate needing background tasks?")
+  plugin "workling", :git => "git://github.com/purzelrakete/workling.git"
+  plugin "spawn",    :git => "git://github.com/tra/spawn.git"
+end
 plugin "nh-toolkit", :git => "git://github.com/Sutto/ninjahideout-toolkit.git"
 plugin "air_budd_form_builder", :git => "git://github.com/airblade/air_budd_form_builder.git"
 
@@ -180,8 +185,4 @@ end
 ################################
 
 rake "db:migrate"
-
-host = ask("Enter Passenger Host Name (empty for none)")
-unless host.blank?
-  run "sudo board-train . #{host}"
-end
+rake "gems:freeze"

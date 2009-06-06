@@ -6,8 +6,6 @@ class User < ActiveRecord::Base
   
   validates_presence_of :display_name, :on => :create, :message => "can't be blank"
   
-  has_many :messages
-  
   def self.[](login)
     first(:conditions => ["LOWER(users.login) = ?", login.downcase])
   end

@@ -185,4 +185,4 @@ end
 ################################
 
 rake "db:migrate"
-rake "gems:freeze"
+rake "gems:unpack"

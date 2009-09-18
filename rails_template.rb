@@ -64,7 +64,6 @@ gem 'mislav-will_paginate',  :version => '>= 2.2.3', :lib => 'will_paginate',  :
 gem 'chriseppstein-compass', :lib => 'compass', :source  => 'http://gems.github.com'
 # Testing stuff
 gem "thoughtbot-shoulda",    :lib => "shoulda", :source  => 'http://gems.github.com'
-gem "quietbacktrace"
 gem "rr"
 # General
 gem "searchlogic"
@@ -182,3 +181,5 @@ end
 
 rake "db:migrate"
 rake "gems:unpack"
+
+commit_state "Unpacked and migrated"

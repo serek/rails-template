@@ -9,10 +9,7 @@ GITHUB_USER = "Sutto"
 def download(from, to = from.split("/").last)
   file to, open(from).read
 rescue Exception => e
-  puts e.class
-  puts e.message
-  puts e.backtrace.join("\n")
-  puts "Frak me - No internets"
+  puts "Frak me - No internets (#{e.message})"
   exit!
 end
 
@@ -55,7 +52,6 @@ commit_state "Added base / rough application"
 # Download JQuery
 run "mkdir -p public/javascripts/jquery"
 download "http://jqueryjs.googlecode.com/files/jquery-1.3.2.min.js", "public/javascripts/jquery/jquery.min.js"
-download "http://jqueryjs.googlecode.com/svn/trunk/plugins/form/jquery.form.js", "public/javascripts/jquery/jquery.form.js"
 
 commit_state "jQuery Base"
 

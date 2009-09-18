@@ -52,7 +52,7 @@ commit_state "Added base / rough application"
 
 # Download JQuery
 run "mkdir -p public/javascripts/jquery"
-download "http://jqueryjs.googlecode.com/files/jquery-1.3.1.min.js", "public/javascripts/jquery/jquery.min.js"
+download "http://jqueryjs.googlecode.com/files/jquery-1.3.2.min.js", "public/javascripts/jquery/jquery.min.js"
 download "http://jqueryjs.googlecode.com/svn/trunk/plugins/form/jquery.form.js", "public/javascripts/jquery/jquery.form.js"
 
 commit_state "jQuery Base"
@@ -63,14 +63,14 @@ commit_state "jQuery Base"
 
 # Layout / View related stuff
 gem 'mislav-will_paginate',  :version => '>= 2.2.3', :lib => 'will_paginate',  :source => 'http://gems.github.com'
-gem 'haml-edge',             :version => '>= 2.1.3', :lib => 'haml'
-gem 'chriseppstein-compass', :lib => 'compass', :version => '>= 0.6.6'
+gem 'chriseppstein-compass', :lib => 'compass', :source  => 'http://gems.github.com'
 # Testing stuff
-gem "thoughtbot-shoulda",    :lib => "shoulda"
+gem "thoughtbot-shoulda",    :lib => "shoulda", :source  => 'http://gems.github.com'
 gem "quietbacktrace"
 gem "rr"
 # General
 gem "searchlogic"
+gem "justinfrench-formtastic", :lib => 'formtastic', :source => 'http://gems.github.com'
 
 commit_state "Added gems to the app"
 
@@ -85,7 +85,7 @@ run "mkdir -p public/stylesheets/960"
   from_repo "#{file}.css", "public/stylesheets/960/#{file}.css"
 end
 file "app/stylesheets/screen.sass", "@import compass/utilities.sass\n@import util.sass\n"
-from_repo "util.sass", "app/stylesheets/_util.sass"
+from_repo "_util.sass", "app/stylesheets/_util.sass"
 
 commit_state "Initialize Haml and Compass"
 
@@ -93,16 +93,14 @@ commit_state "Initialize Haml and Compass"
 # Install all of the default plugins #
 ######################################
 
-#plugin "paperclip", :git => "git://github.com/thoughtbot/paperclip.git" # Can has br0kedness.
+plugin "paperclip", :git => "git://github.com/thoughtbot/paperclip.git" # Can has br0kedness.
 plugin "machinist",     :git => "git://github.com/notahat/machinist.git"
 plugin "forgery",       :git => "git://github.com/sevenwire/forgery.git"
 plugin "state_machine", :git => "git://github.com/pluginaweek/state_machine.git"
 if yes?("do you anticipate needing background tasks?")
-  plugin "workling", :git => "git://github.com/purzelrakete/workling.git"
-  plugin "spawn",    :git => "git://github.com/tra/spawn.git"
+  plugin :git => "git://github.com/tobi/delayed_job.git"
 end
 plugin "nh-toolkit", :git => "git://github.com/Sutto/ninjahideout-toolkit.git"
-plugin "air_budd_form_builder", :git => "git://github.com/airblade/air_budd_form_builder.git"
 
 commit_state "Added plugins"
 

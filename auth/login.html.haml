@@ -4,11 +4,11 @@
   .grid_6
     %h3 Log in
 
-    - airbudd_form_for(@user_session, :url => user_session_path) do |f|
+    - semantic_form_for @user_session, :url => user_session_path do |f|
 
-      = f.text_field :login, :label => "Your Login"
+      = f.input :login, :label => "Your Login"
 
-      = f.password_field :password, :label => "Your Password"
+      = f.input :password, :label => "Your Password"
 
       %p.button-field= f.submit "Login"
 

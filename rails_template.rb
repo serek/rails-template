@@ -7,9 +7,11 @@ require 'open-uri'
 GITHUB_USER = "Sutto"
 
 def download(from, to = from.split("/").last)
-  #run "curl -s -L #{from} > #{to}"
   file to, open(from).read
-rescue
+rescue Exception => e
+  puts e.class
+  puts e.message
+  puts e.backtrace.join("\n")
   puts "Frak me - No internets"
   exit!
 end

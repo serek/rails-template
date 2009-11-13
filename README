@@ -2,23 +2,15 @@ This is based on the new rails template stuff by MR Neighborly
 
 a really nice hack is to then do this: 
 
-alias rails="ruby [path to rails] $1 -m http://github.com/Sutto/rails-template/raw/master/rails_template.rb"
+alias rails="ruby [path to rails] $1 -m http://github.com/zacheryph/rails-template/raw/master/rails_template.rb"
 
 this works for me, for zsh.. similar i am sure will work for you
 
 ==================================================
-
-This fork is even more opinionated.
+This fork just does what i want it to do.
 It assumes:
 
- - haml, sass, compass, 960gs - default templates for login, layout etc.
- - uses a predefined form builder (air budd)
- - test with shoulda and rr.
- - use authlogic, searchlogic and aasm
- - give option for a default "site controller"
- - Use forgery instead of faker
- - default to my plugin with a bunch of helpers (e.g. Setting
-   and the like).
- - Automatically add spawn and workling so I don't have to google.
+ - test with shoulda.
+ - use warden/devise, state_machine, searchlogic
  
 All in all, It's bitching (atleast for me).

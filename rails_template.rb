@@ -72,7 +72,7 @@ if yes?("* Background Tasks?")
 end
 
 if yes?("* File Uploads?")
-  gem 'paperclip',            :version => '>= 2.3.11'
+  gem 'paperclip',            :version => '>= 2.3.1.1'
 end
 
 if yes?("* Inherited Resources?")

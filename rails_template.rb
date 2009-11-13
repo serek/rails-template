@@ -1,6 +1,7 @@
 # Zachery's Rails Template, based off Darcy Laycock's Template
 require 'open-uri'
 GITHUB_USER = "zacheryph"
+SUDO_GEM = false
 
 def download(from, to = from.split("/").last)
   file to, open(from).read
@@ -16,6 +17,10 @@ end
 def commit_state(comment)
   git :add => "."
   git :commit => "-am '#{comment}'"
+end
+
+if yes?("Run gem command with sudo?")
+  SUDO_GEM = true
 end
 
 ####################
@@ -88,12 +93,16 @@ commit_state "Add base gems to app"
 if yes?("* Authentication?")
   gem 'warden',               :version => '>= 0.5.2'
   gem 'devise',               :version => '>= 0.4.3'
-  
+
+  rake 'gems:install', :sudo => SUDO_GEM
+
   generate :devise_install
   generate :devise, 'User'
   generate :devise_views
-  
+
   commit_state "Add basic devise authorization"
+else
+  rake 'gems:install', :sudo => SUDO_GEM
 end
 
 ################################

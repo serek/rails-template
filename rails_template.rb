@@ -111,3 +111,6 @@ end
 
 rake "db:migrate"
 commit_state "Migrate Database"
+
+# gc the repo for fun
+git :gc => '--aggressive --prune=now'

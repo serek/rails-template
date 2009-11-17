@@ -2,6 +2,8 @@
 require 'open-uri'
 GITHUB_USER = "zacheryph"
 SUDO_GEM = false
+AUTHENTICATION = false
+VERSIONING = false
 
 def download(from, to = from.split("/").last)
   file to, open(from).read
@@ -84,25 +86,37 @@ if yes?("* Inherited Resources?")
   gem 'inherited_resources',  :version => '>= 0.9.2'
 end
 
-commit_state "Add base gems to app"
-
-########################################
-# Generates a user, controller + views #
-########################################
-
 if yes?("* Authentication?")
   gem 'warden',               :version => '>= 0.5.2'
   gem 'devise',               :version => '>= 0.4.3'
+  AUTHENTICATION = true
+end
 
-  rake 'gems:install', :sudo => SUDO_GEM
+if yes?("* Versioning?")
+  gem 'vestal_versions',      :version => '>= 0.8.3'
+  VERSIONING = true
+end
 
+commit_state "Add base gems to app"
+
+# lets install all these bad boys now
+rake 'gems:install', :sudo => SUDO_GEM
+
+########################################
+# lets generate all our special stuff #
+########################################
+if AUTHENTICATION
   generate :devise_install
   generate :devise, 'User'
   generate :devise_views
 
   commit_state "Add basic devise authorization"
 else
-  rake 'gems:install', :sudo => SUDO_GEM
+
+if VERSIONING
+  generate :vestal_versions_migration
+
+  commit_state "Add vestal_versions migration"
 end
 
 ################################

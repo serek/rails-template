@@ -1,9 +1,9 @@
 # Zachery's Rails Template, based off Darcy Laycock's Template
 require 'open-uri'
 GITHUB_USER = "zacheryph"
-SUDO_GEM = false
-AUTHENTICATION = false
-VERSIONING = false
+do_sudo_gem = false
+do_auth = false
+do_versions = false
 
 def download(from, to = from.split("/").last)
   file to, open(from).read
@@ -22,7 +22,7 @@ def commit_state(comment)
 end
 
 if yes?("Run gem command with sudo?")
-  SUDO_GEM = true
+  do_sudo_gem = true
 end
 
 ####################
@@ -86,26 +86,26 @@ if yes?("* Inherited Resources?")
   gem 'inherited_resources',  :version => '>= 0.9.2'
 end
 
-if yes?("* Authentication?")
+if yes?("* do_auth?")
   gem 'warden',               :version => '>= 0.5.2'
   gem 'devise',               :version => '>= 0.4.3'
-  AUTHENTICATION = true
+  do_auth = true
 end
 
-if yes?("* Versioning?")
+if yes?("* do_versions?")
   gem 'vestal_versions',      :version => '>= 0.8.3'
-  VERSIONING = true
+  do_versions = true
 end
 
 commit_state "Add base gems to app"
 
 # lets install all these bad boys now
-rake 'gems:install', :sudo => SUDO_GEM
+rake 'gems:install', :sudo => do_sudo_gem
 
 ########################################
 # lets generate all our special stuff #
 ########################################
-if AUTHENTICATION
+if do_auth
   generate :devise_install
   generate :devise, 'User'
   generate :devise_views
@@ -113,7 +113,7 @@ if AUTHENTICATION
   commit_state "Add basic devise authorization"
 end
 
-if VERSIONING
+if do_versions
   generate :vestal_versions_migration
 
   commit_state "Add vestal_versions migration"

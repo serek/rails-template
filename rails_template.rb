@@ -2,7 +2,8 @@
 require 'open-uri'
 GITHUB_USER = "zacheryph"
 do_sudo_gem = false
-do_auth = false
+do_authentication = false
+do_authorization = false
 do_versions = false
 do_jobs = false
 
@@ -55,9 +56,10 @@ commit_state "Base Rails Application"
 ######################
 
 # Download RightJS
-download "http://rightjs.org/builds/current/right.js", "public/javascripts/right.js"
+from_repo "right.js",   "public/javascripts/right.js"
+from_repo "rightui.js", "public/javascripts/rightui.js"
 
-commit_state "RightJS Base"
+commit_state "install RightJS files"
 
 ##################################
 # Adding the initial set of gems #
@@ -91,7 +93,12 @@ end
 if yes?("* Authentication?")
   gem 'warden',               :version => '>= 0.5.2'
   gem 'devise',               :version => '>= 0.4.3'
-  do_auth = true
+  do_authentication = true
+end
+
+if yes?("* Authorization?")
+  gem 'declarative_authorization', :version => '>= 0.4'
+  do_authorization = true
 end
 
 if yes?("* Versioning?")
@@ -107,12 +114,17 @@ rake 'gems:install', :sudo => do_sudo_gem
 ########################################
 # lets generate all our special stuff #
 ########################################
-if do_auth
-  generate :devise_install
-  generate :devise, 'User'
-  generate :devise_views
+if do_authentication || do_authorization
+  if do_authentication
+    generate :devise_install
+    generate :devise, 'User'
+    generate :devise_views
+  end
+  if do_authorization
+    from_repo 'authorization_rules.rb.erb', 'config/authorization_rules.rb'
+  end
 
-  commit_state "Add basic devise authorization"
+  commit_state "Add authentication/authorization files"
 end
 
 if do_versions

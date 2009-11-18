@@ -4,6 +4,7 @@ GITHUB_USER = "zacheryph"
 do_sudo_gem = false
 do_auth = false
 do_versions = false
+do_jobs = false
 
 def download(from, to = from.split("/").last)
   file to, open(from).read
@@ -76,6 +77,7 @@ gem 'sanitize_email',         :version => '>= 0.3.6'
 # optional
 if yes?("* Background Tasks?")
   gem 'delayed_job',          :version => '>= 1.8.4'
+  do_jobs = true
 end
 
 if yes?("* File Uploads?")
@@ -86,13 +88,13 @@ if yes?("* Inherited Resources?")
   gem 'inherited_resources',  :version => '>= 0.9.2'
 end
 
-if yes?("* do_auth?")
+if yes?("* Authentication?")
   gem 'warden',               :version => '>= 0.5.2'
   gem 'devise',               :version => '>= 0.4.3'
   do_auth = true
 end
 
-if yes?("* do_versions?")
+if yes?("* Versioning?")
   gem 'vestal_versions',      :version => '>= 0.8.3'
   do_versions = true
 end
@@ -117,6 +119,12 @@ if do_versions
   generate :vestal_versions_migration
 
   commit_state "Add vestal_versions migration"
+end
+
+if do_jobs
+  generate :delayed_job
+
+  commit_state "Add delayed_job migration"
 end
 
 ################################

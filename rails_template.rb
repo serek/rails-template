@@ -111,7 +111,7 @@ if AUTHENTICATION
   generate :devise_views
 
   commit_state "Add basic devise authorization"
-else
+end
 
 if VERSIONING
   generate :vestal_versions_migration

@@ -69,12 +69,14 @@ commit_state "install RightJS files"
 # core auth/model/etc
 gem 'searchlogic',            :version => '>= 2.3.6'
 gem 'state_machine',          :verison => '>= 0.8.0'
+gem 'matthuhiggins-foreigner', :version => '>= 0.3.1'
 
 # Layout / View related stuff
 gem 'will_paginate',          :version => '>= 2.3.11'
 
 # testing stuff
 gem 'shoulda',                :version => '>= 2.10.2'
+gem 'rails-footnotes',        :version => '>= 3.6.3'
 
 # optional
 if yes?("* Background Tasks?")

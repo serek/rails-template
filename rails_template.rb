@@ -6,6 +6,7 @@ do_authentication = false
 do_authorization = false
 do_audit = false
 do_jobs = false
+do_forms = false
 
 def download(from, to = from.split("/").last)
   file to, open(from).read
@@ -90,6 +91,12 @@ if yes?("* Inherited Resources?")
   gem 'inherited_resources',  :version => '>= 0.9.2'
 end
 
+if yes?("* Formtastic?")
+  gem 'formtastic',             :version => '>= 0.9.2'
+  gem 'validation_reflection',  :version => '>= 0.3.5'
+  do_forms = true
+end
+
 if yes?("* Authentication?")
   gem 'warden',               :version => '>= 0.5.2'
   gem 'devise',               :version => '>= 0.4.3'
@@ -114,6 +121,12 @@ rake 'gems:install', :sudo => do_sudo_gem
 ########################################
 # lets generate all our special stuff #
 ########################################
+if do_forms
+  generate :formtastic
+
+  commit_state 'add formtastic files'
+end
+
 if do_authentication || do_authorization
   if do_authentication
     generate :devise_install

@@ -75,7 +75,6 @@ gem 'will_paginate',          :version => '>= 2.3.11'
 
 # testing stuff
 gem 'shoulda',                :version => '>= 2.10.2'
-gem 'sanitize_email',         :version => '>= 0.3.6'
 
 # optional
 if yes?("* Background Tasks?")

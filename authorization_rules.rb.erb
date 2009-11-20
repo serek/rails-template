@@ -1,7 +1,12 @@
 # declarative_authorization rules
+authorization do
+  # add custom rules here
 
-# add custom rules here
+  role :guest do
+    has_permission_on :users, :to => [:new, :create]
+  end
+end
 
-role :guest do
-  has_permission_on :users, :to => [:new, :create]
+privileges do
+  privilege :all, :includes => [:index, :show, :read, :new, :create, :edit, :update, :destroy]
 end

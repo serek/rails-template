@@ -69,7 +69,7 @@ commit_state "install RightJS files"
 # core auth/model/etc
 gem 'searchlogic',            :version => '>= 2.3.6'
 gem 'state_machine',          :verison => '>= 0.8.0'
-gem 'matthuhiggins-foreigner', :version => '>= 0.3.1'
+gem 'matthuhiggins-foreigner', :version => '>= 0.3.1', :lib => 'foreigner'
 
 # Layout / View related stuff
 gem 'will_paginate',          :version => '>= 2.3.11'

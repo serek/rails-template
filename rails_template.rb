@@ -4,7 +4,7 @@ GITHUB_USER = "zacheryph"
 do_sudo_gem = false
 do_authentication = false
 do_authorization = false
-do_versions = false
+do_audit = false
 do_jobs = false
 
 def download(from, to = from.split("/").last)
@@ -101,9 +101,9 @@ if yes?("* Authorization?")
   do_authorization = true
 end
 
-if yes?("* Versioning?")
-  gem 'vestal_versions',      :version => '>= 0.8.3'
-  do_versions = true
+if yes?("* Auditing?")
+  gem 'paper_trail',          :version => '>= 1.2.13'
+  do_audit = true
 end
 
 commit_state "Add base gems to app"
@@ -127,10 +127,10 @@ if do_authentication || do_authorization
   commit_state "Add authentication/authorization files"
 end
 
-if do_versions
-  generate :vestal_versions_migration
+if do_audit
+  generate :paper_trail
 
-  commit_state "Add vestal_versions migration"
+  commit_state "Add paper_trail migration"
 end
 
 if do_jobs

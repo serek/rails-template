@@ -2,7 +2,7 @@ This is based on the new rails template stuff by MR Neighborly
 
 a really nice hack is to then do this: 
 
-alias rails="ruby [path to rails] $1 -m  http://tr.im/zactmpl"
+alias rails="ruby [path to rails] $1 -m  http://github.com/zacheryph/rails-template/raw/master/rails_template.rb"
 
 this works for me, for zsh.. similar i am sure will work for you
 
